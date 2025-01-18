@@ -16,6 +16,9 @@
         const currentTimestamp = position.timestamp;
         const coords = position.coords;
 
+        document.getElementById("status").innerText =
+          "GPS attivato con successo";
+
         if (coords.speed !== null) {
           // Usa la velocità fornita dal dispositivo
           document.getElementById("speed").innerText = `Velocità: ${(
