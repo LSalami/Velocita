@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Calcolo Velocità GPS</title>
+  </head>
+  <body>
+    <h1>Velocità in tempo reale</h1>
+    <p id="status">Attivazione GPS...</p>
+    <p id="speed">Velocità: 0 km/h</p>
+
+    <script>
+      let prevPosition = null;
+      let prevTimestamp = null;
+
+      function calculateSpeed(position) {
+        const currentTimestamp = position.timestamp;
+        const coords = position.coords;
+
+        if (coords.speed !== null) {
+          // Usa la velocità fornita dal dispositivo
+          document.getElementById("speed").innerText = `Velocità: ${(
+            coords.speed * 3.6
+          ).toFixed(2)} km/h`;
+        } else if (prevPosition) {
+          // Calcolo manuale della velocità
+          const distance = haversineDistance(
+            [prevPosition.latitude, prevPosition.longitude],
+            [coords.latitude, coords.longitude]
+          );
+          const timeElapsed = (currentTimestamp - prevTimestamp) / 1000; // In secondi
+          const speed = (distance / timeElapsed) * 3.6; // Converti m/s in km/h
+          document.getElementById(
+            "speed"
+          ).innerText = `Velocità: ${speed.toFixed(2)} km/h`;
+        }
+
+        prevPosition = coords;
+        prevTimestamp = currentTimestamp;
+      }
+
+      function haversineDistance(coords1, coords2) {
+        const R = 6371e3; // Raggio terrestre in metri
+        const rad = Math.PI / 180;
+        const lat1 = coords1[0] * rad;
+        const lat2 = coords2[0] * rad;
+        const deltaLat = (coords2[0] - coords1[0]) * rad;
+        const deltaLon = (coords2[1] - coords1[1]) * rad;
+
+        const a =
+          Math.sin(deltaLat / 2) ** 2 +
+          Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // Distanza in metri
+      }
+
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+          calculateSpeed,
+          (error) => {
+            document.getElementById(
+              "status"
+            ).innerText = `Errore: ${error.message}`;
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        document.getElementById("status").innerText =
+          "Geolocalizzazione non supportata dal browser.";
+      }
+    </script>
+  </body>
+</html>
