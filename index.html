@@ -35,6 +35,7 @@
   <body>
     <h1>Velocità in tempo reale</h1>
     <p id="status">Attivazione GPS...</p>
+    <p id=type></p>
     <p id="speed">Velocità: 0 km/h</p>
 
     <script>
@@ -49,11 +50,15 @@
           "GPS attivato con successo";
 
         if (coords.speed !== null) {
+           document.getElementById("type").innerText =
+          "Usa la velocità fornita dal dispositivo";
           // Usa la velocità fornita dal dispositivo
           document.getElementById("speed").innerText = `Velocità: ${(
             coords.speed * 3.6
           ).toFixed(2)} km/h`;
         } else if (prevPosition) {
+           document.getElementById("type").innerText =
+          "Calcolo manuale della velocità";
           // Calcolo manuale della velocità
           const distance = haversineDistance(
             [prevPosition.latitude, prevPosition.longitude],
