@@ -30,6 +30,19 @@
         border-radius: 10px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
+        button {
+        font-size: 18px;
+        padding: 10px 20px;
+        margin: 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
     </style>
   </head>
   <body>
@@ -37,17 +50,34 @@
     <p id="status">Attivazione GPS...</p>
     <p id="type"></p>
     <p id="speed">Velocità: 0 km/h</p>
-    <button id="test">TEST</button>
+    <button id="enableSoundButton">Abilita Suono</button>
     <script>
       let prevPosition = null;
       let prevTimestamp = null;
       let isPlaying = false;
+      let soundEnabled = false;
 
       // Crea un oggetto Audio per il suono
       const alertSound = new Audio("alert.mp3"); // Assicurati di avere il file `alert.mp3` nella directory del progetto
 
+       // Funzione per abilitare il suono
+      document
+        .getElementById("enableSoundButton")
+        .addEventListener("click", () => {
+          alertSound.play().then(() => {
+            alertSound.pause(); // Precarica il suono
+            alertSound.currentTime = 0;
+            soundEnabled = true; // Abilita il suono
+            document.getElementById("enableSoundButton").style.display = "none";
+            alert("Suono abilitato! Ora verrà riprodotto quando superi i 50 km/h.");
+          }).catch((error) => {
+            alert("Errore durante l'abilitazione del suono: " + error.message);
+          });
+        });
+      
       function playAlertSound() {
         if (!isPlaying) {
+          alertSound.volume = 0.5; // Imposta il volume al 50%
           alertSound.loop = true; // Suono ripetuto
           alertSound.play();
           isPlaying = true;
@@ -140,11 +170,7 @@
       } else {
         document.getElementById("status").innerText =
           "Geolocalizzazione non supportata dal browser.";
-      }
-
-         document
-        .getElementById("test")
-        .addEventListener("click", toggleAlertSound);
+      }        
     </script>
   </body>
 </html>
