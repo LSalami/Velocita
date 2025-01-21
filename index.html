@@ -39,6 +39,8 @@
         background-color: #007bff;
         color: white;
         cursor: pointer;
+        display: block; /* Ogni pulsante sarà su una nuova riga */
+        margin: 20px auto; /* Centra i pulsanti con un margine */
       }
       button:hover {
         background-color: #0056b3;
@@ -51,7 +53,6 @@
     <p id="type"></p>
     <p id="speed">Velocità: 0 km/h</p>
     <button id="enableSoundButton">Abilita Suono</button>
-    <button id="testSoundButton" style="display: none;">Test Suono</button>
     <script>
       let prevPosition = null;
       let prevTimestamp = null;
@@ -70,8 +71,6 @@
             alertSound.currentTime = 0;
             soundEnabled = true; // Abilita il suono
             document.getElementById("enableSoundButton").style.display = "none";
-            document.getElementById("testSoundButton").style.display = "inline-block";
-            alert("Suono abilitato! Ora puoi testarlo o attenderne l'attivazione automatica.");
           }).catch((error) => {
             alert("Errore durante l'abilitazione del suono: " + error.message);
           });
@@ -79,7 +78,6 @@
       
       function playAlertSound() {
         if (soundEnabled && !isPlaying) {
-          alertSound.volume = 0.5; // Imposta il volume al 50%
           alertSound.loop = true; // Suono ripetuto
           alertSound.play();
           isPlaying = true;
@@ -92,15 +90,6 @@
           alertSound.pause();
           alertSound.currentTime = 0;
           isPlaying = false;
-        }
-      }
-
-       // Funzione per alternare il suono manualmente
-      function toggleAlertSound() {
-        if (isPlaying) {
-          stopAlertSound();
-        } else {
-          playAlertSound();
         }
       }
 
@@ -174,12 +163,7 @@
       } else {
         document.getElementById("status").innerText =
           "Geolocalizzazione non supportata dal browser.";
-      }
-
-      // Assegna la funzione al pulsante di test
-      document
-        .getElementById("testSoundButton")
-        .addEventListener("click", toggleAlertSound);
+      }      
     </script>
   </body>
 </html>
