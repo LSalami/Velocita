@@ -35,12 +35,32 @@
   <body>
     <h1>Velocità in tempo reale</h1>
     <p id="status">Attivazione GPS...</p>
-    <p id=type></p>
+    <p id="type"></p>
     <p id="speed">Velocità: 0 km/h</p>
 
     <script>
       let prevPosition = null;
       let prevTimestamp = null;
+      let isPlaying = false;
+
+      // Crea un oggetto Audio per il suono
+      const alertSound = new Audio("alert.mp3"); // Assicurati di avere il file `alert.mp3` nella directory del progetto
+
+      function playAlertSound() {
+        if (!isPlaying) {
+          alertSound.loop = true; // Suono ripetuto
+          alertSound.play();
+          isPlaying = true;
+        }
+      }
+
+      function stopAlertSound() {
+        if (isPlaying) {
+          alertSound.pause();
+          alertSound.currentTime = 0;
+          isPlaying = false;
+        }
+      }
 
       function calculateSpeed(position) {
         const currentTimestamp = position.timestamp;
@@ -49,26 +69,31 @@
         document.getElementById("status").innerText =
           "GPS attivato con successo";
 
+        let currentSpeed = 0;
+
         if (coords.speed !== null) {
-           document.getElementById("type").innerText =
-          "Usa la velocità fornita dal dispositivo";
-          // Usa la velocità fornita dal dispositivo
-          document.getElementById("speed").innerText = `Velocità: ${(
-            coords.speed * 3.6
-          ).toFixed(2)} km/h`;
+          document.getElementById("type").innerText =
+            "Usa la velocità fornita dal dispositivo";
+          currentSpeed = coords.speed * 3.6;
         } else if (prevPosition) {
-           document.getElementById("type").innerText =
-          "Calcolo manuale della velocità";
-          // Calcolo manuale della velocità
+          document.getElementById("type").innerText =
+            "Calcolo manuale della velocità";
           const distance = haversineDistance(
             [prevPosition.latitude, prevPosition.longitude],
             [coords.latitude, coords.longitude]
           );
           const timeElapsed = (currentTimestamp - prevTimestamp) / 1000; // In secondi
-          const speed = (distance / timeElapsed) * 3.6; // Converti m/s in km/h
-          document.getElementById(
-            "speed"
-          ).innerText = `Velocità: ${speed.toFixed(2)} km/h`;
+          currentSpeed = (distance / timeElapsed) * 3.6; // Converti m/s in km/h
+        }
+
+        document.getElementById(
+          "speed"
+        ).innerText = `Velocità: ${currentSpeed.toFixed(2)} km/h`;
+
+        if (currentSpeed >= 50) {
+          playAlertSound();
+        } else {
+          stopAlertSound();
         }
 
         prevPosition = coords;
