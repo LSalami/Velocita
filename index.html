@@ -37,7 +37,7 @@
     <p id="status">Attivazione GPS...</p>
     <p id="type"></p>
     <p id="speed">Velocità: 0 km/h</p>
-
+    <button id="test">TEST</button>
     <script>
       let prevPosition = null;
       let prevTimestamp = null;
@@ -61,6 +61,13 @@
           isPlaying = false;
         }
       }
+
+       function toggleAlertSound() {
+        if (isPlaying) {
+          stopAlertSound();
+        } else {
+          playAlertSound();
+        }
 
       function calculateSpeed(position) {
         const currentTimestamp = position.timestamp;
@@ -133,6 +140,10 @@
         document.getElementById("status").innerText =
           "Geolocalizzazione non supportata dal browser.";
       }
+
+         document
+        .getElementById("test")
+        .addEventListener("click", toggleAlertSound);
     </script>
   </body>
 </html>
