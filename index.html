@@ -39,11 +39,21 @@
         background-color: #007bff;
         color: white;
         cursor: pointer;
-        display: block; /* Ogni pulsante sarà su una nuova riga */
-        margin: 20px auto; /* Centra i pulsanti con un margine */
+        display: inline-block;
       }
       button:hover {
         background-color: #0056b3;
+      }
+      .input-container {
+        margin: 20px;
+      }
+      input[type="text"] {
+        font-size: 18px;
+        padding: 10px;
+        width: 150px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
       }
     </style>
   </head>
@@ -52,15 +62,20 @@
     <p id="status">Attivazione GPS...</p>
     <p id="type"></p>
     <p id="speed">Velocità: 0 km/h</p>
+    <div class="input-container">
+      <input
+        type="text"
+        id="manualSpeedInput"
+        placeholder="Imposta velocità (km/h)" />
+      <button id="setSpeedButton">Imposta</button>
+    </div>
     <button id="enableSoundButton">Abilita Suono</button>
     <script>
-      let prevPosition = null;
-      let prevTimestamp = null;
       let isPlaying = false;
       let soundEnabled = false;
 
       // Crea un oggetto Audio per il suono
-      const alertSound = new Audio("alert.mp3"); // Assicurati di avere il file `alert.mp3` nella directory del progetto
+      const alertSound = new Audio("alert.mp3");
 
       // Funzione per abilitare il suono
       document
@@ -69,9 +84,9 @@
           alertSound
             .play()
             .then(() => {
-              alertSound.pause(); // Precarica il suono
+              alertSound.pause();
               alertSound.currentTime = 0;
-              soundEnabled = true; // Abilita il suono
+              soundEnabled = true;
               document.getElementById("enableSoundButton").style.display =
                 "none";
             })
@@ -84,13 +99,12 @@
 
       function playAlertSound() {
         if (soundEnabled && !isPlaying) {
-          alertSound.loop = true; // Suono ripetuto
+          alertSound.loop = true;
           alertSound.play();
           isPlaying = true;
         }
       }
 
-      // Funzione per fermare il suono
       function stopAlertSound() {
         if (isPlaying) {
           alertSound.pause();
@@ -99,63 +113,37 @@
         }
       }
 
-      function calculateSpeed(position) {
-        const currentTimestamp = position.timestamp;
-        const coords = position.coords;
+      // Funzione per impostare manualmente la velocità
+      document
+        .getElementById("setSpeedButton")
+        .addEventListener("click", () => {
+          const manualSpeedInput = document.getElementById("manualSpeedInput");
+          const manualSpeed = parseFloat(manualSpeedInput.value);
 
-        document.getElementById("status").innerText =
-          "GPS attivato con successo";
+          if (!isNaN(manualSpeed) && manualSpeed >= 0) {
+            document.getElementById(
+              "speed"
+            ).innerText = `Velocità: ${manualSpeed.toFixed(2)} km/h`;
+            document.getElementById("type").innerText =
+              "Velocità impostata manualmente";
 
-        let currentSpeed = 0;
-
-        if (coords.speed !== null) {
-          document.getElementById("type").innerText =
-            "Usa la velocità fornita dal dispositivo";
-          currentSpeed = coords.speed * 3.6;
-        } else if (prevPosition) {
-          document.getElementById("type").innerText =
-            "Calcolo manuale della velocità";
-          const distance = haversineDistance(
-            [prevPosition.latitude, prevPosition.longitude],
-            [coords.latitude, coords.longitude]
-          );
-          const timeElapsed = (currentTimestamp - prevTimestamp) / 1000; // In secondi
-          currentSpeed = (distance / timeElapsed) * 3.6; // Converti m/s in km/h
-        }
-
-        document.getElementById(
-          "speed"
-        ).innerText = `Velocità: ${currentSpeed.toFixed(2)} km/h`;
-
-        if (currentSpeed >= 0) {
-          playAlertSound();
-        } else {
-          stopAlertSound();
-        }
-
-        prevPosition = coords;
-        prevTimestamp = currentTimestamp;
-      }
-
-      function haversineDistance(coords1, coords2) {
-        const R = 6371e3; // Raggio terrestre in metri
-        const rad = Math.PI / 180;
-        const lat1 = coords1[0] * rad;
-        const lat2 = coords2[0] * rad;
-        const deltaLat = (coords2[0] - coords1[0]) * rad;
-        const deltaLon = (coords2[1] - coords1[1]) * rad;
-
-        const a =
-          Math.sin(deltaLat / 2) ** 2 +
-          Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) ** 2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c; // Distanza in metri
-      }
+            // Attiva o ferma il suono in base alla velocità
+            if (manualSpeed > 0) {
+              playAlertSound();
+            } else {
+              stopAlertSound();
+            }
+          } else {
+            alert("Inserisci un valore numerico valido!");
+          }
+        });
 
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
-          calculateSpeed,
+          (position) => {
+            document.getElementById("status").innerText =
+              "GPS attivato con successo";
+          },
           (error) => {
             document.getElementById(
               "status"
