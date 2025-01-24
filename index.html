@@ -127,7 +127,7 @@
           "speed"
         ).innerText = `Velocità: ${currentSpeed.toFixed(2)} km/h`;
 
-        if (currentSpeed >= 100) {
+        if (currentSpeed >= 0) {
           playAlertSound();
         } else {
           stopAlertSound();
