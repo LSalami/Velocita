@@ -30,7 +30,7 @@
         border-radius: 10px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
-        button {
+      button {
         font-size: 18px;
         padding: 10px 20px;
         margin: 20px;
@@ -66,16 +66,22 @@
       document
         .getElementById("enableSoundButton")
         .addEventListener("click", () => {
-          alertSound.play().then(() => {
-            alertSound.pause(); // Precarica il suono
-            alertSound.currentTime = 0;
-            soundEnabled = true; // Abilita il suono
-            document.getElementById("enableSoundButton").style.display = "none";
-          }).catch((error) => {
-            alert("Errore durante l'abilitazione del suono: " + error.message);
-          });
+          alertSound
+            .play()
+            .then(() => {
+              alertSound.pause(); // Precarica il suono
+              alertSound.currentTime = 0;
+              soundEnabled = true; // Abilita il suono
+              document.getElementById("enableSoundButton").style.display =
+                "none";
+            })
+            .catch((error) => {
+              alert(
+                "Errore durante l'abilitazione del suono: " + error.message
+              );
+            });
         });
-      
+
       function playAlertSound() {
         if (soundEnabled && !isPlaying) {
           alertSound.loop = true; // Suono ripetuto
@@ -121,7 +127,7 @@
           "speed"
         ).innerText = `Velocità: ${currentSpeed.toFixed(2)} km/h`;
 
-        if (currentSpeed >= 50) {
+        if (currentSpeed >= 0) {
           playAlertSound();
         } else {
           stopAlertSound();
@@ -163,7 +169,7 @@
       } else {
         document.getElementById("status").innerText =
           "Geolocalizzazione non supportata dal browser.";
-      }      
+      }
     </script>
   </body>
 </html>
