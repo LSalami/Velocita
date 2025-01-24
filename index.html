@@ -45,17 +45,6 @@
       button:hover {
         background-color: #0056b3;
       }
-      .input-container {
-        margin: 20px;
-      }
-      input[type="text"] {
-        font-size: 18px;
-        padding: 10px;
-        width: 150px;
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        margin-right: 10px;
-      }
     </style>
   </head>
   <body>
@@ -63,13 +52,6 @@
     <p id="status">Attivazione GPS...</p>
     <p id="type"></p>
     <p id="speed">Velocità: 0 km/h</p>
-    <div class="input-container">
-      <input
-        type="text"
-        id="manualSpeedInput"
-        placeholder="Imposta velocità (km/h)" />
-      <button id="setSpeedButton">Imposta</button>
-    </div>
     <button id="enableSoundButton">Abilita Suono</button>
     <script>
       let prevPosition = null;
